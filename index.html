@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best-Performing Student Recognition System</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="style1.css">
+    <!-- Custom CSS (Optional) -->
+    <link rel="stylesheet" href="style.css">
+    <!-- jQuery for AJAX -->
+    <script src="function.js"></script>
+</head>
+<body class="container mt-5">
+
+    <!-- Header Section -->
+    <h1 class="text-center">Best-Performing Student Recognition System</h1>
+    <p class="text-center">Identify and appreciate top 3 students based on performance</p>
+
+    <!-- Form to Add Student Data -->
+    <form id="studentForm" class="mb-5" action="connect.php" method="post">
+        <div class="form-group">
+            <input type="text" class="form-control" id="name" placeholder="Student Name" required name="Name">
+        </div>
+        <div class="form-group">
+            <input type="number" step="0.01" class="form-control" id="gpa" placeholder="GPA" required name="GPA">
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" id="attendance" placeholder="Attendance (%)" required name="Attendance">
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" id="hackathons" placeholder="Hackathons Participated" required name="hackathons">
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" id="papers" placeholder="Papers Presented" required name="papers Presented">
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" id="mentoring" placeholder="Mentoring Contributions" required name="mentoring">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Student</button>
+    </form>
+
+    <!-- Leaderboard Section -->
+    <h2>Top 3 Students</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>GPA</th>
+                <th>Attendance (%)</th>
+                <th>Hackathons</th>
+                <th>Papers</th>
+                <th>Mentoring</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard">
+            <!-- Data will be injected here using JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Form submission handler to add student data
+        $('#studentForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const student = {
+                name: $('#name').val(),
+                gpa: parseFloat($('#gpa').val()),
+                attendance: parseFloat($('#attendance').val()),
+                hackathons: parseInt($('#hackathons').val()),
+                papers: parseInt($('#papers').val()),
+                mentoring: parseInt($('#mentoring').val())
+            };
+
+            // Send data to backend
+            $.ajax({
+                url: '/add_student',  // Backend API to add student data
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(student),
+                success: function() {
+                    alert('Student added successfully!');
+                    loadLeaderboard();  // Refresh leaderboard after adding
+                }
+            });
+        });
+
+        // Function to load top 3 students into the leaderboard
+        function loadLeaderboard() {
+            $.get('/rank', function(students) {
+                $('#leaderboard').empty();
+                students.forEach(student => {
+                    $('#leaderboard').append(`
+                        <tr>
+                            <td>${student[0]}</td>
+                            <td>${student[1]}</td>
+                            <td>${student[2]}</td>
+                            <td>${student[3]}</td>
+                            <td>${student[4]}</td>
+                            <td>${student[5]}</td>
+                            <td>${student[6]}</td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        // Load leaderboard on page load
+        loadLeaderboard();
+    </script>
+
+</body>
+</html>
